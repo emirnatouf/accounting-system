@@ -1,0 +1,150 @@
+<%- include('partials/header', { title: 'المصروفات - عمليات الصرف', page: 'expenses' }) %>
+
+<!-- Top bar -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <div class="d-flex gap-2 flex-wrap">
+    <span class="badge bg-danger-subtle text-danger border border-danger-subtle fs-6 py-2 px-3">
+      <i class="bi bi-currency-dollar me-1"></i><span data-i18n="stat_total_expenses">الإجمالي</span>: <strong id="totalAmount">—</strong>
+    </span>
+    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle fs-6 py-2 px-3">
+      <i class="bi bi-list-ol me-1"></i><span id="totalCount">—</span> <span data-i18n="records_label">سجل</span>
+    </span>
+  </div>
+  <button class="btn btn-danger" onclick="openAddModal()">
+    <i class="bi bi-plus-circle-fill me-1"></i><span data-i18n="btn_add_expense">إضافة مصروف</span>
+  </button>
+</div>
+
+<!-- Search Filters -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body py-3">
+    <div class="row g-2 align-items-end">
+      <div class="col-12 col-md-5">
+        <label class="form-label small text-muted mb-1" data-i18n="col_receiver_name">اسم المستلم / رقم الوصل</label>
+        <input type="text" class="form-control form-control-sm" id="searchMain"
+               data-i18n-placeholder="search_expenses_ph" placeholder="ابحث...">
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small text-muted mb-1" data-i18n="filter_from">من تاريخ</label>
+        <input type="date" class="form-control form-control-sm" id="dateFrom">
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small text-muted mb-1" data-i18n="filter_to">إلى تاريخ</label>
+        <input type="date" class="form-control form-control-sm" id="dateTo">
+      </div>
+      <div class="col-12 col-md-1">
+        <button class="btn btn-outline-secondary btn-sm w-100" onclick="clearFilters()" data-i18n-title="btn_clear" title="مسح">
+          <i class="bi bi-x-circle"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th style="width:46px" data-i18n="col_num">#</th>
+            <th data-i18n="col_receiver_name">اسم المستلم</th>
+            <th data-i18n="col_amount">المبلغ ($)</th>
+            <th class="d-none d-lg-table-cell" data-i18n="col_expense_reason">سبب المصروف</th>
+            <th data-i18n="col_receipt_num">رقم الوصل</th>
+            <th class="d-none d-md-table-cell" data-i18n="col_date">التاريخ</th>
+            <th style="width:60px" data-i18n="col_file">الوصل</th>
+            <th style="width:100px" data-i18n="col_actions">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="8" class="text-center py-5 text-muted">
+            <div class="spinner-border text-danger mb-2" role="status"></div>
+            <div data-i18n="loading">جاري التحميل...</div>
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex flex-wrap justify-content-between align-items-center px-3 py-2 border-top bg-light rounded-bottom gap-2">
+      <div class="text-muted small" id="paginationInfo"></div>
+      <nav><ul class="pagination pagination-sm mb-0" id="pagination"></ul></nav>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal fade" id="mainModal" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="modalTitle"><i class="bi bi-plus-circle me-1"></i> <span data-i18n="modal_add_expense">إضافة مصروف</span></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="mainForm" novalidate>
+          <input type="hidden" id="recordId">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold"><span data-i18n="label_receiver_name">اسم المستلم</span> <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="fReceiverName"
+                     data-i18n-placeholder="ph_receiver_name" placeholder="اسم الشخص أو الجهة المستلمة">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold"><span data-i18n="label_amount_expense">قيمة المصروف ($)</span> <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-danger-subtle text-danger fw-bold">$</span>
+                <input type="number" class="form-control" id="fAmount" placeholder="0.00" min="0.01" step="0.01">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold"><span data-i18n="label_receipt_num">رقم الوصل</span> <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="fReceiptNumber"
+                     data-i18n-placeholder="ph_receipt_num" placeholder="رقم الوصل الفريد">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold"><span data-i18n="label_expense_date">تاريخ العملية</span> <span class="text-danger">*</span></label>
+              <input type="date" class="form-control" id="fExpenseDate">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold" data-i18n="label_expense_reason">سبب المصروف</label>
+              <input type="text" class="form-control" id="fExpenseReason"
+                     data-i18n-placeholder="ph_expense_reason" placeholder="وصف سبب الصرف">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">
+                <span data-i18n="label_receipt_file">صورة الوصل</span>
+                <span class="text-muted fw-normal">(<span data-i18n="file_optional">JPG / PNG / PDF — اختياري</span>)</span>
+              </label>
+              <input type="file" class="form-control" id="fReceiptFile" accept=".jpg,.jpeg,.png,.gif,.pdf">
+              <div id="currentFileInfo" class="mt-1 small text-muted"></div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          <span data-i18n="btn_cancel">إلغاء</span>
+        </button>
+        <button type="button" class="btn btn-danger px-4" id="saveBtnModal" onclick="saveRecord()">
+          <i class="bi bi-save me-1"></i><span data-i18n="btn_save">حفظ</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt Viewer Modal -->
+<div class="modal fade" id="viewerModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-image me-1"></i> <span data-i18n="col_file">الوصل</span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center p-2 bg-light" id="viewerContent" style="min-height:300px"></div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer', { pageScript: '/js/expenses.js' }) %>

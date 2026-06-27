@@ -1,0 +1,117 @@
+<%
+  const currentLang = locals.lang || 'ar';
+  const isRtl = currentLang === 'ar';
+%><!DOCTYPE html>
+<html lang="<%= currentLang %>" dir="<%= isRtl ? 'rtl' : 'ltr' %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= isRtl ? 'تسجيل الدخول' : 'Sign In' %> — <%= isRtl ? 'نظام المحاسبة' : 'Accounting System' %></title>
+  <% if (isRtl) { %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+  <% } else { %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <% } %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap">
+  <style>
+    body {
+      font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .login-card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 420px;
+    }
+    .brand-icon {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; color: #fff;
+      margin: 0 auto 1rem;
+    }
+    .form-control:focus { border-color: #0f3460; box-shadow: 0 0 0 .2rem rgba(15,52,96,.2); }
+    .btn-login { background: linear-gradient(135deg, #0f3460, #16213e); border: none; color: #fff; font-weight: 600; min-height: 44px; }
+    .btn-login:hover { background: linear-gradient(135deg, #1a4a8a, #0f3460); color: #fff; }
+    .lang-bar { position: absolute; top: 1rem; inset-inline-end: 1rem; }
+  </style>
+</head>
+<body>
+  <!-- Language toggle -->
+  <div class="lang-bar">
+    <form method="POST" action="/set-lang" class="d-inline m-0">
+      <input type="hidden" name="lang" value="<%= isRtl ? 'en' : 'ar' %>">
+      <button type="submit" class="btn btn-sm btn-light border" style="border-radius:20px;font-family:'Cairo',sans-serif;font-size:.8rem">
+        <i class="bi bi-translate me-1"></i><%= isRtl ? 'English' : 'عربي' %>
+      </button>
+    </form>
+  </div>
+
+  <div class="login-card">
+    <div class="brand-icon">
+      <i class="bi bi-calculator-fill"></i>
+    </div>
+    <h4 class="text-center fw-bold mb-1" data-i18n="sys_name"><%= isRtl ? 'نظام المحاسبة' : 'Accounting System' %></h4>
+    <p class="text-center text-muted small mb-4" data-i18n="login_subtitle"><%= isRtl ? 'يرجى تسجيل الدخول للمتابعة' : 'Please sign in to continue' %></p>
+
+    <% if (locals.error) { %>
+    <div class="alert alert-danger d-flex align-items-center gap-2 py-2" role="alert">
+      <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+      <span><%= error %></span>
+    </div>
+    <% } %>
+
+    <form method="POST" action="/login">
+      <div class="mb-3">
+        <label class="form-label fw-semibold" data-i18n="login_user_label"><%= isRtl ? 'اسم المستخدم' : 'Username' %></label>
+        <div class="input-group">
+          <span class="input-group-text bg-light"><i class="bi bi-person-fill text-muted"></i></span>
+          <input type="text" name="username" class="form-control" autocomplete="username" required autofocus
+                 data-i18n-placeholder="login_user_ph"
+                 placeholder="<%= isRtl ? 'أدخل اسم المستخدم' : 'Enter your username' %>">
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-semibold" data-i18n="login_pass_label"><%= isRtl ? 'كلمة المرور' : 'Password' %></label>
+        <div class="input-group">
+          <span class="input-group-text bg-light"><i class="bi bi-lock-fill text-muted"></i></span>
+          <input type="password" name="password" id="passwordInput" class="form-control" autocomplete="current-password" required
+                 data-i18n-placeholder="login_pass_ph"
+                 placeholder="<%= isRtl ? 'أدخل كلمة المرور' : 'Enter your password' %>">
+          <button type="button" class="btn btn-outline-secondary" id="togglePwd" tabindex="-1">
+            <i class="bi bi-eye-fill" id="eyeIcon"></i>
+          </button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-login w-100 py-2">
+        <i class="bi bi-box-arrow-in-right me-1"></i><span data-i18n="login_btn"><%= isRtl ? 'دخول' : 'Sign In' %></span>
+      </button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/i18n.js"></script>
+  <script>
+    document.getElementById('togglePwd').addEventListener('click', () => {
+      const inp  = document.getElementById('passwordInput');
+      const icon = document.getElementById('eyeIcon');
+      if (inp.type === 'password') { inp.type = 'text'; icon.className = 'bi bi-eye-slash-fill'; }
+      else                         { inp.type = 'password'; icon.className = 'bi bi-eye-fill'; }
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof applyTranslations === 'function') applyTranslations();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<%
+  const currentLang = locals.lang || 'ar';
+  const isRtl       = currentLang === 'ar';
+  const dir         = isRtl ? 'rtl' : 'ltr';
+  const pageKey     = { dashboard:'nav_dashboard', income:'nav_income', expenses:'nav_expenses', reports:'nav_reports' }[locals.page] || 'sys_name';
+%><!DOCTYPE html>
+<html lang="<%= currentLang %>" dir="<%= dir %>">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title || 'نظام المحاسبة' %></title>
+
+  <% if (isRtl) { %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+  <% } else { %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <% } %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div id="toast-container" class="position-fixed top-0 p-3" style="z-index:1090;inset-inline-start:0"></div>
+
+  <!-- Mobile sidebar overlay -->
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+  <div class="d-flex" id="wrapper">
+
+    <!-- ======== Sidebar ======== -->
+    <nav class="sidebar d-flex flex-column" id="sidebar">
+      <div class="sidebar-brand">
+        <i class="bi bi-calculator-fill text-warning fs-3 flex-shrink-0"></i>
+        <div class="ms-2">
+          <div class="fw-bold text-white lh-1" data-i18n="sys_name">نظام المحاسبة</div>
+          <small class="text-white-50" data-i18n="sys_version">الإصدار 2.0</small>
+        </div>
+      </div>
+
+      <ul class="sidebar-nav list-unstyled mt-2 flex-grow-1">
+        <li>
+          <a href="/dashboard" class="sidebar-link <%= locals.page==='dashboard' ? 'active':'' %>">
+            <i class="bi bi-speedometer2"></i><span data-i18n="nav_dashboard">لوحة التحكم</span>
+          </a>
+        </li>
+        <li>
+          <a href="/income" class="sidebar-link <%= locals.page==='income' ? 'active':'' %>">
+            <i class="bi bi-arrow-down-circle-fill"></i><span data-i18n="nav_income">الإيرادات</span>
+          </a>
+        </li>
+        <li>
+          <a href="/expenses" class="sidebar-link <%= locals.page==='expenses' ? 'active':'' %>">
+            <i class="bi bi-arrow-up-circle-fill"></i><span data-i18n="nav_expenses">المصروفات</span>
+          </a>
+        </li>
+        <li>
+          <a href="/reports" class="sidebar-link <%= locals.page==='reports' ? 'active':'' %>">
+            <i class="bi bi-file-earmark-bar-graph-fill"></i><span data-i18n="nav_reports">التقارير</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <% if (locals.username) { %>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi bi-person-circle text-white-50 fs-5 flex-shrink-0"></i>
+          <span class="text-white-50 small text-truncate"><%= username %></span>
+        </div>
+        <form method="POST" action="/logout" class="d-grid">
+          <button type="submit" class="btn btn-outline-light btn-sm py-1">
+            <i class="bi bi-box-arrow-left me-1"></i><span data-i18n="nav_logout">تسجيل الخروج</span>
+          </button>
+        </form>
+        <% } %>
+      </div>
+    </nav>
+
+    <!-- ======== Page Content ======== -->
+    <div class="page-wrapper flex-grow-1 d-flex flex-column">
+
+      <!-- Top Bar -->
+      <div class="top-bar d-flex align-items-center justify-content-between px-3 px-md-4 py-2">
+
+        <!-- Hamburger -->
+        <button class="btn btn-link text-dark p-0 border-0 flex-shrink-0" id="toggleSidebar" title="Toggle menu">
+          <i class="bi bi-list fs-3"></i>
+        </button>
+
+        <!-- Right side -->
+        <div class="d-flex align-items-center gap-2 gap-md-3">
+          <span class="text-muted small d-none d-md-inline">
+            <i class="bi bi-calendar3 me-1"></i><span id="currentDate"></span>
+          </span>
+
+          <!-- Language toggle -->
+          <form method="POST" action="/set-lang" class="d-inline m-0">
+            <input type="hidden" name="lang" value="<%= isRtl ? 'en' : 'ar' %>">
+            <button type="submit" class="btn btn-sm btn-outline-secondary lang-toggle-btn">
+              <i class="bi bi-translate me-1"></i><%= isRtl ? 'English' : 'عربي' %>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Page Header -->
+      <div class="page-header px-3 px-md-4 py-2 border-bottom bg-white">
+        <h5 class="mb-0 fw-bold text-dark">
+          <% if(locals.page==='dashboard')  { %><i class="bi bi-speedometer2 text-primary me-2"></i>
+          <% } else if(locals.page==='income')   { %><i class="bi bi-arrow-down-circle-fill text-success me-2"></i>
+          <% } else if(locals.page==='expenses') { %><i class="bi bi-arrow-up-circle-fill text-danger me-2"></i>
+          <% } else { %><i class="bi bi-file-earmark-bar-graph-fill text-info me-2"></i><% } %>
+          <span data-i18n="<%= pageKey %>"><%= locals.title %></span>
+        </h5>
+      </div>
+
+      <!-- Main Content -->
+      <main class="flex-grow-1 p-3 p-md-4 bg-light">

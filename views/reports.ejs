@@ -1,0 +1,130 @@
+<%- include('partials/header', { title: 'التقارير المالية', page: 'reports' }) %>
+
+<!-- Filter Bar -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-12">
+        <label class="form-label fw-semibold"><i class="bi bi-funnel me-1"></i><span data-i18n="period_filter_label">فلترة الفترة الزمنية</span></label>
+        <div class="btn-group flex-wrap gap-1" role="group" id="periodBtns">
+          <button type="button" class="btn btn-outline-primary period-btn active" data-period="all" data-i18n="period_all">الكل</button>
+          <button type="button" class="btn btn-outline-primary period-btn" data-period="today" data-i18n="period_today">اليوم</button>
+          <button type="button" class="btn btn-outline-primary period-btn" data-period="week" data-i18n="period_week">هذا الأسبوع</button>
+          <button type="button" class="btn btn-outline-primary period-btn" data-period="month" data-i18n="period_month">هذا الشهر</button>
+          <button type="button" class="btn btn-outline-primary period-btn" data-period="year" data-i18n="period_year">هذه السنة</button>
+          <button type="button" class="btn btn-outline-secondary period-btn" data-period="custom" data-i18n="period_custom">فترة مخصصة</button>
+        </div>
+      </div>
+      <div class="col-6 col-md-3" id="customDateRow" style="display:none">
+        <label class="form-label small" data-i18n="filter_from">من تاريخ</label>
+        <input type="date" class="form-control" id="dateFrom">
+      </div>
+      <div class="col-6 col-md-3" id="customDateRow2" style="display:none">
+        <label class="form-label small" data-i18n="filter_to">إلى تاريخ</label>
+        <input type="date" class="form-control" id="dateTo">
+      </div>
+      <div class="col-12 col-md-2" id="applyBtnRow" style="display:none">
+        <button class="btn btn-primary w-100" onclick="loadReport()">
+          <i class="bi bi-search me-1"></i><span data-i18n="btn_apply">تطبيق</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row g-3 mb-4" id="summaryCards">
+  <div class="col-4">
+    <div class="card border-0 shadow-sm text-center p-2 p-md-3">
+      <div class="text-muted small mb-1"><i class="bi bi-arrow-down-circle-fill text-success me-1"></i><span data-i18n="stat_total_income">إجمالي الإيرادات</span></div>
+      <div class="fw-bold fs-4 fs-md-3 text-success" id="rTotalIncome">—</div>
+      <div class="text-muted small"><span id="rIncomeCount">—</span> <span data-i18n="ops_count">عملية</span></div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card border-0 shadow-sm text-center p-2 p-md-3">
+      <div class="text-muted small mb-1"><i class="bi bi-arrow-up-circle-fill text-danger me-1"></i><span data-i18n="stat_total_expenses">إجمالي المصروفات</span></div>
+      <div class="fw-bold fs-4 fs-md-3 text-danger" id="rTotalExpenses">—</div>
+      <div class="text-muted small"><span id="rExpensesCount">—</span> <span data-i18n="ops_count">عملية</span></div>
+    </div>
+  </div>
+  <div class="col-4">
+    <div class="card border-0 shadow-sm text-center p-2 p-md-3">
+      <div class="text-muted small mb-1"><i class="bi bi-graph-up-arrow text-primary me-1"></i><span data-i18n="stat_net_profit">صافي الربح</span></div>
+      <div class="fw-bold fs-4 fs-md-3" id="rNetProfit">—</div>
+      <div class="small" id="rProfitBadge">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- Export + section title -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <h6 class="fw-bold mb-0"><i class="bi bi-table me-2"></i><span data-i18n="report_details">تفاصيل الفترة</span></h6>
+  <div class="d-flex gap-2 flex-wrap">
+    <button class="btn btn-outline-danger btn-sm" onclick="exportPDF()">
+      <i class="bi bi-file-earmark-pdf me-1"></i><span data-i18n="btn_export_pdf">تصدير PDF</span>
+    </button>
+    <button class="btn btn-outline-success btn-sm" onclick="exportExcel()">
+      <i class="bi bi-file-earmark-excel me-1"></i><span data-i18n="btn_export_excel">تصدير Excel</span>
+    </button>
+  </div>
+</div>
+
+<!-- Income Table -->
+<div class="card border-0 shadow-sm mb-3" id="incomeSection">
+  <div class="card-header bg-success-subtle border-0">
+    <h6 class="mb-0 text-success fw-bold">
+      <i class="bi bi-arrow-down-circle-fill me-1"></i><span data-i18n="income_table_title">عمليات القبض (الإيرادات)</span>
+    </h6>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0 align-middle" id="incomeTable">
+        <thead class="table-light">
+          <tr>
+            <th data-i18n="col_num">#</th>
+            <th data-i18n="col_student_name">اسم الطالب</th>
+            <th class="d-none d-md-table-cell" data-i18n="col_spec">التخصص</th>
+            <th data-i18n="col_amount">المبلغ ($)</th>
+            <th class="d-none d-lg-table-cell" data-i18n="col_payment_reason">سبب الدفع</th>
+            <th data-i18n="col_receipt_num">رقم الوصل</th>
+            <th class="d-none d-md-table-cell" data-i18n="col_date">التاريخ</th>
+          </tr>
+        </thead>
+        <tbody id="incomeTableBody">
+          <tr><td colspan="7" class="text-center py-3 text-muted" data-i18n="loading">جاري التحميل...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Expenses Table -->
+<div class="card border-0 shadow-sm" id="expensesSection">
+  <div class="card-header bg-danger-subtle border-0">
+    <h6 class="mb-0 text-danger fw-bold">
+      <i class="bi bi-arrow-up-circle-fill me-1"></i><span data-i18n="expenses_table_title">عمليات الصرف (المصروفات)</span>
+    </h6>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0 align-middle" id="expensesTable">
+        <thead class="table-light">
+          <tr>
+            <th data-i18n="col_num">#</th>
+            <th data-i18n="col_receiver_name">اسم المستلم</th>
+            <th data-i18n="col_amount">المبلغ ($)</th>
+            <th class="d-none d-lg-table-cell" data-i18n="col_expense_reason">السبب</th>
+            <th data-i18n="col_receipt_num">رقم الوصل</th>
+            <th class="d-none d-md-table-cell" data-i18n="col_date">التاريخ</th>
+          </tr>
+        </thead>
+        <tbody id="expensesTableBody">
+          <tr><td colspan="6" class="text-center py-3 text-muted" data-i18n="loading">جاري التحميل...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer', { pageScript: '/js/reports.js' }) %>
