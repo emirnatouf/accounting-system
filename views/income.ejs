@@ -1,7 +1,7 @@
 <%- include('partials/header', { title: 'الإيرادات - عمليات القبض', page: 'income' }) %>
 
 <!-- Top bar -->
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2 page-topbar-actions">
   <div class="d-flex gap-2 flex-wrap">
     <span class="badge bg-success-subtle text-success border border-success-subtle fs-6 py-2 px-3">
       <i class="bi bi-currency-dollar me-1"></i><span data-i18n="stat_total_income">الإجمالي</span>: <strong id="totalAmount">—</strong>
@@ -38,7 +38,7 @@
         <input type="date" class="form-control form-control-sm" id="dateTo">
       </div>
       <div class="col-6 col-md-1">
-        <button class="btn btn-outline-secondary btn-sm w-100" onclick="clearFilters()" data-i18n-title="btn_clear" title="مسح">
+        <button class="btn btn-outline-secondary btn-sm w-100" onclick="clearFilters()" data-i18n-title="btn_clear" title="مسح" style="min-height:38px">
           <i class="bi bi-x-circle"></i>
         </button>
       </div>
@@ -81,7 +81,7 @@
 
 <!-- Add/Edit Modal -->
 <div class="modal fade" id="mainModal" tabindex="-1" data-bs-backdrop="static">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+  <div class="modal-dialog modal-lg modal-fullscreen-sm-down modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header bg-success text-white">
         <h5 class="modal-title" id="modalTitle"><i class="bi bi-plus-circle me-1"></i> <span data-i18n="modal_add_income">إضافة عملية قبض</span></h5>
@@ -147,7 +147,7 @@
 
 <!-- Receipt Viewer Modal -->
 <div class="modal fade" id="viewerModal" tabindex="-1">
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-xl modal-fullscreen-sm-down modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><i class="bi bi-image me-1"></i> <span data-i18n="col_file">الوصل</span></h5>

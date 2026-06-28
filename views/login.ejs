@@ -29,9 +29,12 @@
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 20px 60px rgba(0,0,0,.4);
-      padding: 2.5rem 2rem;
+      padding: 2rem 1.5rem;
       width: 100%;
       max-width: 420px;
+    }
+    @media (min-width: 480px) {
+      .login-card { padding: 2.5rem 2rem; }
     }
     .brand-icon {
       width: 64px; height: 64px;
@@ -41,8 +44,9 @@
       font-size: 2rem; color: #fff;
       margin: 0 auto 1rem;
     }
+    .form-control { font-size: 16px; min-height: 44px; border-radius: 8px; border-color: #d1d9e0; }
     .form-control:focus { border-color: #0f3460; box-shadow: 0 0 0 .2rem rgba(15,52,96,.2); }
-    .btn-login { background: linear-gradient(135deg, #0f3460, #16213e); border: none; color: #fff; font-weight: 600; min-height: 44px; }
+    .btn-login { background: linear-gradient(135deg, #0f3460, #16213e); border: none; color: #fff; font-weight: 600; min-height: 48px; font-size: 1rem; }
     .btn-login:hover { background: linear-gradient(135deg, #1a4a8a, #0f3460); color: #fff; }
     .lang-bar { position: absolute; top: 1rem; inset-inline-end: 1rem; }
   </style>

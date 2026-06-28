@@ -17,8 +17,10 @@ body {
   background-color: #f0f2f5;
   color: #1a1d23;
   min-height: 100vh;
-  overflow-x: hidden;
 }
+
+/* ===== Flex utilities ===== */
+.min-w-0 { min-width: 0; }
 
 /* ===== Sidebar ===== */
 .sidebar {
@@ -61,6 +63,13 @@ body {
 
 [dir="rtl"] #wrapper.sidebar-collapsed { margin-right: 0; }
 [dir="ltr"] #wrapper.sidebar-collapsed { margin-left: 0; }
+
+/* ===== Page content wrapper (flex child — must not overflow) ===== */
+.page-wrapper {
+  min-width: 0;    /* Prevents flex child from expanding beyond flex container */
+  max-width: 100%; /* Belt-and-suspenders for older browsers */
+  flex: 1 1 auto;
+}
 
 /* ===== Sidebar overlay (mobile) ===== */
 .sidebar-overlay {
@@ -130,6 +139,7 @@ body {
   top: 0;
   z-index: 100;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  flex-shrink: 0;
 }
 
 /* ===== Page header ===== */
@@ -211,12 +221,6 @@ body {
 }
 .btn-sm { border-radius: 6px; min-height: 32px; }
 
-/* Touch-friendly sizes on mobile */
-@media (max-width: 575.98px) {
-  .btn:not(.btn-sm) { min-height: 44px; }
-  .form-control, .form-select { min-height: 44px; }
-}
-
 /* ===== Badges ===== */
 .badge { font-family: var(--font-main); font-weight: 500; }
 
@@ -225,6 +229,13 @@ body {
   border-radius: 6px !important;
   font-size: 0.85rem;
   padding: 0.35rem 0.85rem;
+}
+
+/* ===== Responsive font-size utilities (Bootstrap 5 missing these) ===== */
+@media (min-width: 768px) {
+  .fs-md-3 { font-size: 1.75rem !important; }
+  .fs-md-4 { font-size: 1.5rem !important; }
+  .fs-md-5 { font-size: 1.25rem !important; }
 }
 
 /* ===== Print ===== */
@@ -269,49 +280,31 @@ body {
   white-space: nowrap;
 }
 
-/* ===== Mobile Card view for tables ===== */
-.mobile-card-list { display: none; }
-
-/* ===== Responsive — Tablet (md) ===== */
+/* ===== Responsive — Tablet (≤991px) ===== */
 @media (max-width: 991.98px) {
   :root { --sidebar-width: 240px; }
-
   .stat-icon { width: 52px; height: 52px; }
-
-  /* Slightly smaller sidebar on tablets */
   main.flex-grow-1 { padding: 1rem !important; }
 }
 
-/* ===== Responsive — Mobile (sm and below) ===== */
+/* ===== Responsive — Mobile (≤767px) ===== */
 @media (max-width: 767.98px) {
-  /* Sidebar becomes a drawer overlay on mobile */
-  [dir="rtl"] .sidebar {
-    transform: translateX(var(--sidebar-width));
-  }
-  [dir="ltr"] .sidebar {
-    transform: translateX(calc(-1 * var(--sidebar-width)));
-  }
+  /* Sidebar becomes a drawer overlay */
+  [dir="rtl"] .sidebar { transform: translateX(var(--sidebar-width)); }
+  [dir="ltr"] .sidebar { transform: translateX(calc(-1 * var(--sidebar-width))); }
   [dir="rtl"] .sidebar.show,
-  [dir="ltr"] .sidebar.show {
-    transform: translateX(0);
-  }
+  [dir="ltr"] .sidebar.show { transform: translateX(0); }
 
-  /* No margin — sidebar overlays */
+  /* No margin — sidebar overlays the content */
   [dir="rtl"] #wrapper,
-  [dir="ltr"] #wrapper {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-  }
-
-  /* Sidebar collapsed class doesn't apply on mobile */
+  [dir="ltr"] #wrapper,
   #wrapper.sidebar-collapsed {
-    margin-left: 0 !important;
+    margin-left:  0 !important;
     margin-right: 0 !important;
   }
 
   /* Compact top bar */
   .top-bar { padding-left: 0.75rem !important; padding-right: 0.75rem !important; }
-  .top-bar .d-none.d-md-inline { display: none !important; }
 
   /* Main content padding */
   main.flex-grow-1 { padding: 0.75rem !important; }
@@ -320,51 +313,84 @@ body {
   .page-header { padding: 0.5rem 0.75rem !important; }
   .page-header h5 { font-size: 1rem; }
 
-  /* Stat cards: 1 column on xs */
-  .stat-card .card-body { padding: 0.9rem !important; gap: 0.75rem !important; }
-  .stat-icon { width: 48px; height: 48px; }
-  .stat-icon i { font-size: 1.4rem !important; }
+  /* Stat cards — tighten so they don't overflow when stacked */
+  .stat-card .card-body { padding: 0.9rem !important; gap: 0.65rem !important; }
+  .stat-icon { width: 46px; height: 46px; }
+  .stat-icon i { font-size: 1.3rem !important; }
 
   /* Shortcut cards */
   .card-hover .card-body { padding: 0.75rem !important; }
 
-  /* Table: horizontal scroll already works via .table-responsive */
-  /* On very small screens, table font smaller */
-  .table { font-size: 0.82rem; }
-  .table > :not(caption) > * > * { padding: 0.5rem 0.6rem; }
-  .table thead th { font-size: 0.75rem; }
+  /* Tables — denser on mobile */
+  .table { font-size: 0.8rem; }
+  .table > :not(caption) > * > * { padding: 0.45rem 0.55rem; }
+  .table thead th { font-size: 0.72rem; }
 
-  /* Filters stack vertically */
+  /* Actions column buttons — keep touchable but compact */
+  .btn-group.btn-group-sm .btn { padding: 0.3rem 0.45rem; min-height: 30px; }
+
+  /* Filters row gutter */
   .card-body .row.g-2 { --bs-gutter-x: 0.5rem; }
 
-  /* Modal: full width */
-  .modal-dialog { margin: 0.5rem; }
-  .modal-dialog.modal-lg { max-width: 100%; }
-  .modal-dialog.modal-xl { max-width: 100%; }
+  /* Modal — nearly full width, remove rounded corners on fullscreen */
+  .modal-dialog {
+    margin: 0.4rem;
+    max-width: calc(100% - 0.8rem) !important;
+  }
 
-  /* Button group in table rows */
-  .btn-group.btn-group-sm .btn { padding: 0.3rem 0.5rem; }
-
-  /* Period buttons wrap on small screens */
+  /* Period buttons — wrap */
   #periodBtns { display: flex !important; flex-wrap: wrap; gap: 0.35rem !important; }
-  .period-btn { flex: 1 0 auto; min-width: 80px; text-align: center; }
+  .period-btn { min-width: 72px; text-align: center; }
 
-  /* Export buttons */
-  .d-flex.justify-content-between.align-items-center.mb-3 {
+  /* Reports export row — stack vertically */
+  .reports-toolbar {
     flex-direction: column !important;
     align-items: flex-start !important;
     gap: 0.5rem;
   }
 
   /* Chart height on mobile */
-  #mainChart { max-height: 260px; }
+  #mainChart { max-height: 240px; }
+
+  /* Touch-friendly tap targets — 44px minimum (Apple HIG) */
+  .btn:not(.btn-sm):not(.btn-close):not(.lang-toggle-btn) { min-height: 44px; }
+
+  /* Prevent iOS auto-zoom on input focus (requires font-size >= 16px) */
+  .form-control, .form-select { min-height: 44px; font-size: 16px !important; }
+  .form-control-sm, .form-select-sm { min-height: 38px; font-size: 14px !important; }
+
+  /* Reports summary cards — compact padding on mobile */
+  #summaryCards .card-body,
+  #summaryCards [style*="padding"] { padding: 0.6rem 0.5rem !important; }
 }
 
-/* ===== Extra small (xs) ===== */
+/* ===== Responsive — SM only (576–767px): reports summary 3-col needs smaller text ===== */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  #summaryCards .fw-bold { font-size: 1.1rem !important; }
+  #summaryCards [style*="padding"] { padding: 0.5rem 0.4rem !important; }
+  #summaryCards .text-muted.small { font-size: 0.67rem; }
+}
+
+/* ===== Extra small (≤424px) ===== */
 @media (max-width: 424.98px) {
-  .lang-toggle-btn .d-none-xs { display: none !important; }
+  /* Sidebar brand subtitle */
   .sidebar-brand .ms-2 > small { display: none; }
 
-  /* Badge header stats — stack vertically */
-  .d-flex.flex-wrap.justify-content-between.align-items-center.mb-3 { gap: 0.5rem; }
+  /* Smaller stat icon on tiny phones */
+  .stat-icon { width: 40px; height: 40px; }
+  .stat-icon i { font-size: 1.1rem !important; }
+
+  /* Further compact tables */
+  .table > :not(caption) > * > * { padding: 0.4rem 0.4rem; }
+  .table { font-size: 0.77rem; }
+
+  /* Reduce top-bar badge size on income/expenses pages */
+  .badge.fs-6 { font-size: 0.78rem !important; padding: 0.35rem 0.55rem !important; }
+
+  /* Stack add-button full width on xs */
+  .page-topbar-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .page-topbar-actions > button { width: 100% !important; }
 }

@@ -33,32 +33,32 @@
 </div>
 
 <!-- Summary Cards -->
-<div class="row g-3 mb-4" id="summaryCards">
-  <div class="col-4">
-    <div class="card border-0 shadow-sm text-center p-2 p-md-3">
+<div class="row g-2 g-sm-3 mb-4" id="summaryCards">
+  <div class="col-12 col-sm-4">
+    <div class="card border-0 shadow-sm text-center h-100" style="padding:0.6rem 0.5rem">
       <div class="text-muted small mb-1"><i class="bi bi-arrow-down-circle-fill text-success me-1"></i><span data-i18n="stat_total_income">إجمالي الإيرادات</span></div>
-      <div class="fw-bold fs-4 fs-md-3 text-success" id="rTotalIncome">—</div>
+      <div class="fw-bold fs-5 fs-md-3 text-success" id="rTotalIncome">—</div>
       <div class="text-muted small"><span id="rIncomeCount">—</span> <span data-i18n="ops_count">عملية</span></div>
     </div>
   </div>
-  <div class="col-4">
-    <div class="card border-0 shadow-sm text-center p-2 p-md-3">
+  <div class="col-12 col-sm-4">
+    <div class="card border-0 shadow-sm text-center h-100" style="padding:0.6rem 0.5rem">
       <div class="text-muted small mb-1"><i class="bi bi-arrow-up-circle-fill text-danger me-1"></i><span data-i18n="stat_total_expenses">إجمالي المصروفات</span></div>
-      <div class="fw-bold fs-4 fs-md-3 text-danger" id="rTotalExpenses">—</div>
+      <div class="fw-bold fs-5 fs-md-3 text-danger" id="rTotalExpenses">—</div>
       <div class="text-muted small"><span id="rExpensesCount">—</span> <span data-i18n="ops_count">عملية</span></div>
     </div>
   </div>
-  <div class="col-4">
-    <div class="card border-0 shadow-sm text-center p-2 p-md-3">
+  <div class="col-12 col-sm-4">
+    <div class="card border-0 shadow-sm text-center h-100" style="padding:0.6rem 0.5rem">
       <div class="text-muted small mb-1"><i class="bi bi-graph-up-arrow text-primary me-1"></i><span data-i18n="stat_net_profit">صافي الربح</span></div>
-      <div class="fw-bold fs-4 fs-md-3" id="rNetProfit">—</div>
+      <div class="fw-bold fs-5 fs-md-3" id="rNetProfit">—</div>
       <div class="small" id="rProfitBadge">—</div>
     </div>
   </div>
 </div>
 
 <!-- Export + section title -->
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2 reports-toolbar">
   <h6 class="fw-bold mb-0"><i class="bi bi-table me-2"></i><span data-i18n="report_details">تفاصيل الفترة</span></h6>
   <div class="d-flex gap-2 flex-wrap">
     <button class="btn btn-outline-danger btn-sm" onclick="exportPDF()">
